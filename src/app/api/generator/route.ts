@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import OpenAI from "openai";
 import ImageModel from "@/models/image";
@@ -13,21 +13,19 @@ const connectToDatabase = async (): Promise<void> => {
   if (mongoose.connections[0].readyState) return; // Already connected
   if (!MONGO_URI) {
     throw new Error("MongoDB connection URI is not defined");
-  }else{
-    console.log("MongoDB connection URI is defined")
+  } else {
+    console.log("MongoDB connection URI is defined");
   }
   await mongoose.connect(MONGO_URI); // Connect to MongoDB
 };
 
-interface Request {
-  json: () => Promise<{ prompt: string }>;
-}
+ 
 
 interface ImageResponse {
   url?: string;
 }
 
-export const POST = async (request: Request) => {
+export const POST = async (request: NextRequest) => {
   try {
     const { prompt } = await request.json();
 
@@ -42,8 +40,6 @@ export const POST = async (request: Request) => {
       size: "1024x1024",
     });
 
-    console.log("OpenAI response:", response);
-
     const imageUrls = response.data
       .filter((image: ImageResponse) => {
         if (image.url === undefined) {
@@ -55,8 +51,6 @@ export const POST = async (request: Request) => {
         url: image.url!,
         prompt,
       }));
-
-    console.log("Image URLs:", imageUrls);
 
     // Save images to MongoDB
     for (const image of imageUrls) {
@@ -71,13 +65,15 @@ export const POST = async (request: Request) => {
       }
     }
 
-    return NextResponse.json({ message: "Image generated and saved", images: imageUrls });
+    return NextResponse.json({
+      message: "Image generated and saved",
+      images: imageUrls,
+    });
   } catch (error) {
     console.error("Error generating image:", error);
     return NextResponse.json({ message: "Request error", error });
   }
 };
-
 
 export const GET = async () => {
   try {
