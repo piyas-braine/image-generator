@@ -1,19 +1,21 @@
-"use client";
-import React, { useState, useEffect } from "react";
+"use client"; // Import the useClient hook
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [images, setImages] = useState<{ url: string; prompt: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);  
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Fetch all stored images on page load
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch("api/generator", { method: "GET" });
+        const response = await fetch("/api/generator", { method: "GET" });
         const data = await response.json();
+        console.log(data)
         if (data.images) {
           setImages(data.images);
         }
@@ -30,7 +32,7 @@ export default function Home() {
     if (!prompt) return;
     setLoading(true);
     try {
-      const response = await fetch("api/generator", {
+      const response = await fetch("/api/generator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
@@ -58,14 +60,11 @@ export default function Home() {
   const downloadImage = (imageUrl: string) => {
     try {
       // Open the image URL in a new tab
-      window.open(imageUrl, '_blank');
+      window.open(imageUrl, "_blank");
     } catch (error) {
       console.error("Error opening the image:", error);
     }
   };
-  
-  
-  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-8 transition duration-300">
@@ -113,6 +112,8 @@ export default function Home() {
                 src={image.url}
                 alt={image.prompt}
                 className="w-full h-64 object-cover transition-transform duration-300 cursor-pointer"
+                width={1024} // Use appropriate width for the image
+                height={1024} // Use appropriate height for the image
                 onClick={() => openImageModal(image.url)} // Open image in modal on click
               />
               <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-sm p-4 opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
@@ -124,29 +125,7 @@ export default function Home() {
       </main>
 
       {/* All Saved Images Section */}
-      <footer className="w-full max-w-5xl mt-12 animate-fade-in-up">
-        <h2 className="text-xl sm:text-2xl font-semibold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
-          All Generated Images
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="relative group overflow-hidden rounded-lg shadow-xl bg-white dark:bg-gray-800 transform transition duration-500 hover:scale-105 hover:shadow-2xl"
-            >
-              <Image
-                src={image.url}
-                alt={image.prompt}
-                className="w-full h-40 object-cover transition-transform duration-300 cursor-pointer"
-                onClick={() => openImageModal(image.url)} // Open image in modal on click
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-2 opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
-                {image.prompt}
-              </div>
-            </div>
-          ))}
-        </div>
-      </footer>
+     
 
       {/* Modal for Full Image */}
       {selectedImage && (
@@ -163,6 +142,8 @@ export default function Home() {
                 src={selectedImage}
                 alt="Full Size"
                 className="w-full h-auto max-h-[80vh] object-contain"
+                width={1024} // Adjust as needed
+                height={1024} // Adjust as needed
               />
               <button
                 className="absolute top-4 right-4 text-white bg-blue-600 p-2 rounded-md shadow-lg hover:bg-blue-700 transition duration-200"
