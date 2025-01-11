@@ -6,7 +6,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [images, setImages] = useState<{ url: string; prompt: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Track selected image
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);  
 
   // Fetch all stored images on page load
   useEffect(() => {
@@ -109,7 +109,7 @@ export default function Home() {
               key={index}
               className="relative group overflow-hidden rounded-lg shadow-xl bg-white dark:bg-gray-800 transform transition duration-500 hover:scale-105 hover:shadow-2xl"
             >
-              <img
+              <Image
                 src={image.url}
                 alt={image.prompt}
                 className="w-full h-64 object-cover transition-transform duration-300 cursor-pointer"
@@ -134,7 +134,7 @@ export default function Home() {
               key={index}
               className="relative group overflow-hidden rounded-lg shadow-xl bg-white dark:bg-gray-800 transform transition duration-500 hover:scale-105 hover:shadow-2xl"
             >
-              <img
+              <Image
                 src={image.url}
                 alt={image.prompt}
                 className="w-full h-40 object-cover transition-transform duration-300 cursor-pointer"
@@ -159,7 +159,7 @@ export default function Home() {
             onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside the modal
           >
             <div className="relative">
-              <img
+              <Image
                 src={selectedImage}
                 alt="Full Size"
                 className="w-full h-auto max-h-[80vh] object-contain"

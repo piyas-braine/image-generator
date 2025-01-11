@@ -22,10 +22,12 @@ export const POST = async (request: Request) => {
       size: "1024x1024",
     });
 
-    const imageUrls = response.data.map((image: any) => ({
-      url: image.url,
-      prompt,
-    }));
+    const imageUrls = response.data
+      .filter((image: { url?: string }) => image.url !== undefined)
+      .map((image: { url?: string }) => ({
+        url: image.url as string,
+        prompt,
+      }));
 
     generatedImages.push(...imageUrls);
 
